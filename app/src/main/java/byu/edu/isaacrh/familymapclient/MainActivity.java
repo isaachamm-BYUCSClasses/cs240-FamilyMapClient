@@ -1,14 +1,52 @@
 package byu.edu.isaacrh.familymapclient;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+import android.util.Log;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoginFragment.Listener {
+
+    private LoginFragment loginFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentFrameLayout);
+        if(fragment == null) {
+            fragment = createLoginFragment();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragmentFrameLayout, fragment)
+                    .commit();
+        }
+        else {
+            if(fragment instanceof LoginFragment) {
+                ((LoginFragment) fragment).registerListener(this);
+            }
+        }
+
+
+    }
+
+    private Fragment createLoginFragment() {
+        LoginFragment loginFragment = new LoginFragment();
+        loginFragment.registerListener(this);
+        return loginFragment;
+
+    }
+
+    @Override
+    public void notifyDone() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = new MapFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentFrameLayout, fragment)
+                .commit();
     }
 }

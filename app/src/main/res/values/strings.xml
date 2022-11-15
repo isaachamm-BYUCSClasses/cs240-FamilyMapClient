@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">FamilyMapClient</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="serverHost">Server Host:</string>
+    <string name="serverPort">Server Port:</string>
+    <string name="userName">User Name:</string>
+    <string name="password">Password:</string>
+    <string name="firstName">First Name:</string>
+    <string name="lastName">Last Name</string>
+    <string name="email">Email:</string>
+    <string name="gender">Gender:</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="login_fail">Login Failed, try again</string>
+    <string name="firstNameResult">%s</string>
+    <string name="lastNameResult">%s</string>
+
+
 </resources>

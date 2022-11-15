@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
+        android:stretchColumns="3"
+        >
+
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/serverHost" />
+            <EditText
+                android:id="@+id/serverHostString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:layout_span="3"
+                android:text="10.0.2.2"
+                tools:text="10.0.2.2" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/serverPort" />
+            <EditText
+                android:id="@+id/serverPortString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:layout_span="3"
+                android:text="8080"
+                tools:text="8080" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/userName" />
+            <EditText
+                android:id="@+id/userNameString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:layout_span="3"
+                android:text="isaac"
+                tools:text="isaac" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/password" />
+            <EditText
+                android:id="@+id/passwordString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:layout_span="3"
+                android:text="password"
+                tools:text="password" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/firstName" />
+            <EditText
+                android:id="@+id/firstNameString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:layout_span="3"
+                android:text="Isaac"
+                tools:text="isaac" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/lastName" />
+            <EditText
+                android:id="@+id/lastNameString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:layout_span="3"
+                android:text="Hamm"
+                tools:text="hamm" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="end"
+                android:text="@string/email" />
+            <EditText
+                android:id="@+id/emailString"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:layout_span="3"
+                android:text="user@gmail.com"
+                tools:text="user@gmail.com" />
+        </TableRow>
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@string/gender" />
+
+            <RadioGroup
+                android:orientation="horizontal">
+                <RadioButton
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/maleButton"
+                    android:checked="true"
+                    android:text="@string/male" />
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/femaleButton"
+                    android:text="@string/female" />
+            </RadioGroup>
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal" >
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="6dp"
+                android:enabled="false"
+                android:text="@string/login"/>
+            <Button
+                android:id="@+id/registerButton"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="6dp"
+                android:enabled="false"
+                android:text="@string/register"/>
+        </LinearLayout>
+    </TableLayout>
+
+</FrameLayout>
