@@ -19,6 +19,7 @@ import Response.LoginResponse;
 import Response.PersonResponse;
 import Response.RegisterResponse;
 import model.AuthToken;
+import model.Event;
 
 public class ServerProxy {
 
@@ -43,13 +44,13 @@ public class ServerProxy {
 
             if(http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 System.out.println("Register Successful");
+
+                InputStream responseBody = http.getInputStream();
+                String responseData = readString(responseBody);
+
+                RegisterResponse registerResponse = gson.fromJson(responseData, RegisterResponse.class);
+                return registerResponse;
             }
-
-            InputStream responseBody = http.getInputStream();
-            String responseData = readString(responseBody);
-
-            RegisterResponse registerResponse = gson.fromJson(responseData, RegisterResponse.class);
-            return registerResponse;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -81,13 +82,13 @@ public class ServerProxy {
 
             if(http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 System.out.println("Login Successful");
+
+                InputStream responseBody = http.getInputStream();
+                String responseData = readString(responseBody);
+
+                LoginResponse loginResponse = gson.fromJson(responseData, LoginResponse.class);
+                return loginResponse;
             }
-
-            InputStream responseBody = http.getInputStream();
-            String responseData = readString(responseBody);
-
-            LoginResponse loginResponse = gson.fromJson(responseData, LoginResponse.class);
-            return loginResponse;
 
         } catch (ProtocolException e) {
             e.printStackTrace();
@@ -100,16 +101,71 @@ public class ServerProxy {
     }
 
         //get people
-    public static PersonResponse getPeopleForUser(AuthToken authToken) {
+    public static PersonResponse getPeopleForUser(String authToken) {
+        try {
+            URL url = new URL("http://" + DataCache.getServerHost() + ":" +
+                    DataCache.getServerPort() + "/person");
 
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("GET");
+            http.setDoOutput(false);
+            http.addRequestProperty("Authorization", authToken);
+            http.connect();
 
+            if(http.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                System.out.println("Person datacache Successful");
+
+                InputStream responseBody = http.getInputStream();
+                String responseData = readString(responseBody);
+
+                Gson gson = new Gson();
+                PersonResponse loginResponse = gson.fromJson(responseData, PersonResponse.class);
+                return loginResponse;
+            }
+
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         return null;
     }
 
     //get events
-    public static EventResponse getEventsForUser(AuthToken authToken) {
+    public static EventResponse getEventsForUser(String authToken) {
+        try {
+            URL url = new URL("http://" + DataCache.getServerHost() + ":" +
+                    DataCache.getServerPort() + "/event");
+
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("GET");
+            http.setDoOutput(false);
+            http.addRequestProperty("Authorization", authToken);
+            http.connect();
+
+            if(http.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                System.out.println("Event datacache Successful");
+
+                InputStream responseBody = http.getInputStream();
+                String responseData = readString(responseBody);
+
+                Gson gson = new Gson();
+                EventResponse eventResponse = gson.fromJson(responseData, EventResponse.class);
+                return eventResponse;
+            }
+
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 

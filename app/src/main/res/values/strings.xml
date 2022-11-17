@@ -13,7 +13,8 @@
     <string name="female">Female</string>
     <string name="register">Register</string>
     <string name="login">Login</string>
-    <string name="login_fail">Login Failed, try again</string>
+    <string name="login_fail">Login failed, try again</string>
+    <string name="register_fail">Register failed, try again</string>
     <string name="firstNameResult">%s</string>
     <string name="lastNameResult">%s</string>
 

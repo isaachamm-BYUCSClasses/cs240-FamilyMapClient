@@ -1,9 +1,12 @@
 package byu.edu.isaacrh.familymapclient;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import Response.EventResponse;
+import Response.PersonResponse;
 import model.AuthToken;
 import model.Event;
 import model.Person;
@@ -70,7 +73,38 @@ public class DataCache {
         DataCache.events = events;
     }
 
+    public static String cacheData(String authToken, String personId) {
+        DataCache.getInstance();
 
+//                AuthToken authToken = new AuthToken(loginResponse.getAuthtoken(), loginResponse.getUsername());
+        PersonResponse personResponse = ServerProxy.getPeopleForUser(authToken);
+        EventResponse eventResponse = ServerProxy.getEventsForUser(authToken);
+
+        Map<String, Person> newPeople = new HashMap<>();
+        Map<String, Event> newEvents = new HashMap<>();
+
+        assert personResponse != null;
+        for (Person person : personResponse.getAncestors()) {
+            newPeople.put(person.getPersonID(), person);
+//                    DataCache.getPeople().put(loginResponse.getPersonID(), person);
+        }
+        assert eventResponse != null;
+        for (Event event : eventResponse.getData()) {
+            newEvents.put(event.getEventID(), event);
+//                    DataCache.getEvents().put(loginResponse.getPersonID(), event);
+        }
+
+        DataCache.setPeople(newPeople);
+        DataCache.setEvents(newEvents);
+
+        Person currUser = DataCache.getPersonById(personId);
+
+        String firstName = currUser.getFirstName();
+        String lastName = currUser.getLastName();
+        String fullName = firstName + " " + lastName;
+
+        return fullName;
+    }
 
 
 }
