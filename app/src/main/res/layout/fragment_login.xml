@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".LoginFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,8 +55,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:layout_span="3"
-                android:text="isaac"
-                tools:text="isaac" />
+                android:text="sheila"
+                tools:text="sheila" />
         </TableRow>
         <TableRow>
             <TextView
@@ -71,8 +70,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:layout_span="3"
-                android:text="password"
-                tools:text="password" />
+                android:text="parker"
+                tools:text="parker" />
         </TableRow>
         <TableRow>
             <TextView
@@ -86,8 +85,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:layout_span="3"
-                android:text="Isaac"
-                tools:text="isaac" />
+                android:text="Sheila"
+                tools:text="Sheila" />
         </TableRow>
         <TableRow>
             <TextView
@@ -101,8 +100,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:layout_span="3"
-                android:text="Hamm"
-                tools:text="hamm" />
+                android:text="Parker"
+                tools:text="Parker" />
         </TableRow>
 
         <TableRow>
@@ -117,14 +116,15 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:layout_span="3"
-                android:text="user@gmail.com"
-                tools:text="user@gmail.com" />
+                android:text="sheila@parker.com"
+                tools:text="sheila@parker.com" />
         </TableRow>
         <TableRow>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:gravity="end"
                 android:text="@string/gender" />
 
@@ -134,12 +134,12 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:id="@+id/maleButton"
-                    android:checked="true"
                     android:text="@string/male" />
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/femaleButton"
+                    android:checked="true"
                     android:text="@string/female" />
             </RadioGroup>
         </TableRow>

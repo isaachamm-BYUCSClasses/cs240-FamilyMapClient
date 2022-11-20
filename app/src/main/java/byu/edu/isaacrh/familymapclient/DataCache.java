@@ -1,7 +1,13 @@
 package byu.edu.isaacrh.familymapclient;
 
+import androidx.recyclerview.widget.SortedList;
+
+import com.google.android.gms.maps.model.Polyline;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +21,13 @@ import model.User;
 
 public class DataCache {
 
+    public static DataCache getInstance() {
+        if (instance == null) {
+            instance = new DataCache();
+        }
+        return instance;
+    }
+
     private static String serverPort;
     private static String serverHost;
     private static DataCache instance;
@@ -22,8 +35,11 @@ public class DataCache {
     private static Map<String, Person> people;
     private static Map<String, Event> events;
 
+    private static Map<String, Float> colorMap;
+
     // This maps from each person to their associated events, sorted chronologically
-    Map<Person, List<Event>> personEvents;
+    private static Map<Person, List<Event>> personEvents;
+    private static List<Polyline> polylines;
 
     // String => personid of the ancestors. This is for showing only half
     Set<String> paternalAncestors;
@@ -35,17 +51,67 @@ public class DataCache {
     public static Person getPersonById(String personId) {
         return getPeople().get(personId);
     }
-    public static Event getEventById(String eventId) { return null; }
-    public static List<Event> getPersonEvents(String personId) { return null; }
+
 
 
     private DataCache() { }
 
-    public static DataCache getInstance() {
-        if (instance == null) {
-            instance = new DataCache();
+    public static void addEventColor(String eventType, float color) {
+        if(colorMap == null) {
+            colorMap = new HashMap<>();
         }
-        return instance;
+        colorMap.put(eventType, color);
+    }
+    public static String cacheData(String authToken, String personId) {
+        DataCache.getInstance();
+
+//                AuthToken authToken = new AuthToken(loginResponse.getAuthtoken(), loginResponse.getUsername());
+        PersonResponse personResponse = ServerProxy.getPeopleForUser(authToken);
+        EventResponse eventResponse = ServerProxy.getEventsForUser(authToken);
+
+        Map<String, Person> newPeople = new HashMap<>();
+        Map<String, Event> newEvents = new HashMap<>();
+        Map<Person, List<Event>> newEventMap = new HashMap<>();
+
+        assert personResponse != null;
+        for (Person person : personResponse.getAncestors()) {
+            newPeople.put(person.getPersonID(), person);
+        }
+        DataCache.setPeople(newPeople);
+
+
+        assert eventResponse != null;
+        for (Event event : eventResponse.getData()) {
+            newEvents.put(event.getEventID(), event);
+            Person associatedPerson = getPersonById(event.getPersonID());
+            List<Event> personEvents;
+            if(newEventMap.get(associatedPerson) == null) {
+                personEvents = new ArrayList<>();
+                personEvents.add(event);
+            }
+            else {
+                personEvents = newEventMap.get(associatedPerson);
+                if (personEvents.get(0).getYear() > event.getYear()) {
+                    personEvents.add(0, event);
+                }
+                else {
+                    personEvents.add(event);
+                }
+            }
+
+            newEventMap.put(associatedPerson, personEvents);
+
+        }
+        DataCache.setEvents(newEvents);
+        DataCache.setPersonEvents(newEventMap);
+
+        Person currUser = DataCache.getPersonById(personId);
+
+        String firstName = currUser.getFirstName();
+        String lastName = currUser.getLastName();
+        String fullName = firstName + " " + lastName;
+
+        return fullName;
     }
 
     public static String getServerPort() {
@@ -72,39 +138,22 @@ public class DataCache {
     public static void setEvents(Map<String, Event> events) {
         DataCache.events = events;
     }
-
-    public static String cacheData(String authToken, String personId) {
-        DataCache.getInstance();
-
-//                AuthToken authToken = new AuthToken(loginResponse.getAuthtoken(), loginResponse.getUsername());
-        PersonResponse personResponse = ServerProxy.getPeopleForUser(authToken);
-        EventResponse eventResponse = ServerProxy.getEventsForUser(authToken);
-
-        Map<String, Person> newPeople = new HashMap<>();
-        Map<String, Event> newEvents = new HashMap<>();
-
-        assert personResponse != null;
-        for (Person person : personResponse.getAncestors()) {
-            newPeople.put(person.getPersonID(), person);
-//                    DataCache.getPeople().put(loginResponse.getPersonID(), person);
-        }
-        assert eventResponse != null;
-        for (Event event : eventResponse.getData()) {
-            newEvents.put(event.getEventID(), event);
-//                    DataCache.getEvents().put(loginResponse.getPersonID(), event);
-        }
-
-        DataCache.setPeople(newPeople);
-        DataCache.setEvents(newEvents);
-
-        Person currUser = DataCache.getPersonById(personId);
-
-        String firstName = currUser.getFirstName();
-        String lastName = currUser.getLastName();
-        String fullName = firstName + " " + lastName;
-
-        return fullName;
+    public static Map<String, Float> getColorMap() {
+        return colorMap;
     }
-
-
+    public static void setColorMap(Map<String, Float> colorMap) {
+        DataCache.colorMap = colorMap;
+    }
+    public static Map<Person, List<Event>> getPersonEvents() {
+        return personEvents;
+    }
+    public static void setPersonEvents(Map<Person, List<Event>> personEvents) {
+        DataCache.personEvents = personEvents;
+    }
+    public static List<Polyline> getPolylines() {
+        return polylines;
+    }
+    public static void setPolylines(List<Polyline> polylines) {
+        DataCache.polylines = polylines;
+    }
 }
