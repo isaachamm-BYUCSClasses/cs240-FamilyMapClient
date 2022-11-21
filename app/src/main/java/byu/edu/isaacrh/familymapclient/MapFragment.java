@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,6 +22,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.TextureStyle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +36,8 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
+    private TextView eventInfo;
+    private ImageView genderImage;
 
     public MapFragment() {
         // Required empty public constructor
@@ -44,6 +49,8 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         super.onCreateView(inflater, container, savedInstanceState);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        eventInfo = view.findViewById(R.id.mapEventInfo);
+        genderImage = view.findViewById(R.id.mapGenderImage);
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -102,9 +109,17 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     public boolean onMarkerClick(@NonNull Marker marker) {
 
         Event clickedEvent = (Event) marker.getTag();
+        Person associatedPerson = DataCache.getPersonById(clickedEvent.getPersonID());
 
         mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(clickedEvent.getLatitude(),
                 clickedEvent.getLongitude())));
+
+        String eventInfoString = associatedPerson.getFirstName() + " " + associatedPerson.getLastName() +
+                "\n" + clickedEvent.getEventType() + ": " + clickedEvent.getCity() + ", " +
+                clickedEvent.getCountry() + " (" + clickedEvent.getYear() + ")";
+
+        eventInfo.setText(eventInfoString);
+        //todo set gender image
 
         if(DataCache.getPolylines() != null) {
             for (Polyline p : DataCache.getPolylines()) {
@@ -113,9 +128,6 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         }
 
         List<Polyline> polylineList = new ArrayList<>();
-
-        Person associatedPerson = DataCache.getPersonById(clickedEvent.getPersonID());
-
         // Code for the spouse line
         if(DataCache.getPersonById(associatedPerson.getSpouseID()) != null) {
             Person associatedSpouse = DataCache.getPersonById(associatedPerson.getSpouseID());
@@ -127,7 +139,8 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
             PolylineOptions options = new PolylineOptions()
                     .add(startPoint)
                     .add(endPoint)
-                    .color(Color.RED)
+                    .color(Color.BLUE)
+                    .geodesic(true)
                     .width(20);
             Polyline polyline = mMap.addPolyline(options);
             polylineList.add(polyline);
@@ -137,6 +150,8 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         familyTreeLineRecurse(associatedPerson, clickedEvent, 20, polylineList);
 
         // Code for the life story line
+        Event birthEvent = DataCache.getPersonEvents().get(associatedPerson).get(0);
+        lifeStoryLineRecurse(associatedPerson, birthEvent, 0, polylineList);
 
 
 
@@ -162,6 +177,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
                     .add(startPoint)
                     .add(endPoint)
                     .color(Color.BLACK)
+                    .geodesic(true)
                     .width(width);
             Polyline polyline = mMap.addPolyline(options);
             polylineList.add(polyline);
@@ -172,9 +188,31 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
                     .add(startPoint)
                     .add(endPoint)
                     .color(Color.BLACK)
+                    .geodesic(true)
                     .width(width);
             polyline = mMap.addPolyline(options);
             polylineList.add(polyline);
+        }
+    }
+    public void lifeStoryLineRecurse(Person person, Event prevEvent, int currIndex, List<Polyline> polylineList) {
+        if((currIndex + 1) < DataCache.getPersonEvents().get(person).size()) {
+            currIndex += 1;
+
+            Event nextEvent = DataCache.getPersonEvents().get(person).get(currIndex);
+
+            LatLng startPoint = new LatLng(prevEvent.getLatitude(), prevEvent.getLongitude());
+            LatLng endPoint = new LatLng(nextEvent.getLatitude(), nextEvent.getLongitude());
+
+            PolylineOptions options = new PolylineOptions()
+                    .add(startPoint)
+                    .add(endPoint)
+                    .color(Color.RED)
+                    .geodesic(true)
+                    .width(20);
+            Polyline polyline = mMap.addPolyline(options);
+            polylineList.add(polyline);
+
+            lifeStoryLineRecurse(person, nextEvent, currIndex, polylineList);
         }
     }
 }

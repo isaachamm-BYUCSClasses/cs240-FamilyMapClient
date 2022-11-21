@@ -13,14 +13,23 @@
         class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/mapLinearLayout"/>
+        android:layout_above="@id/mapLinearLayout"
+        tools:layout="@layout/fragment_map" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/mapLinearLayout"
         android:layout_alignParentBottom="true" >
+
+        <ImageView
+            android:id="@+id/mapGenderImage"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="TODO" />
+
         <TextView
+            android:id="@+id/mapEventInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
