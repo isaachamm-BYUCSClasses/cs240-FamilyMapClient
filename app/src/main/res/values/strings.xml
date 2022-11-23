@@ -19,8 +19,8 @@
     <string name="lastNameResult">%s</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="mapFragmentClickMessage">Click on a marker to see event details</string>
-
-    <string name="googleMapsAPIKey">AIzaSyCjar7gMtDHgKATQpy55ewaK_qzSBrbxLQ</string>
-
+    <string name="mapFragmentMenuSearch">Search</string>
+    <string name="mapFragmentMenuSettings">Settings</string>
+    <string name="eventNotSelected">Please select an event</string>
 
 </resources>

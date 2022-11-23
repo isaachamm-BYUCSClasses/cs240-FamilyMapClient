@@ -1,5 +1,6 @@
 package byu.edu.isaacrh.familymapclient;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -7,10 +8,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,10 +28,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.TextureStyle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +42,8 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     private GoogleMap mMap;
     private TextView eventInfo;
     private ImageView genderImage;
+    private boolean eventIsSelected = false; // we use this to know if the person activity can be started
+    private String currAssociatedPersonId;
 
     public MapFragment() {
         // Required empty public constructor
@@ -47,6 +53,8 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        // We're displaying menu options inside of a fragment, so we need this
+        setHasOptionsMenu(true);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         eventInfo = view.findViewById(R.id.mapEventInfo);
@@ -58,7 +66,46 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        LinearLayout linearLayout = view.findViewById(R.id.mapLinearLayout);
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(eventIsSelected) {
+                    Intent intent = new Intent(getActivity(), PersonActivity.class);
+                    intent.putExtra(PersonActivity.CURR_PERSON_KEY, currAssociatedPersonId);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(getActivity(), R.string.eventNotSelected, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main_activity_map_fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch(item.getItemId()) {
+            case R.id.search_button:
+                Toast.makeText(getActivity(), R.string.mapFragmentMenuSearch, Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.settings_button:
+                Toast.makeText(getActivity(), R.string.mapFragmentMenuSettings, Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+
     }
 
     /**
@@ -108,8 +155,10 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
 
+        eventIsSelected = true;
         Event clickedEvent = (Event) marker.getTag();
         Person associatedPerson = DataCache.getPersonById(clickedEvent.getPersonID());
+        currAssociatedPersonId = associatedPerson.getPersonID();
 
         mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(clickedEvent.getLatitude(),
                 clickedEvent.getLongitude())));
@@ -119,7 +168,12 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
                 clickedEvent.getCountry() + " (" + clickedEvent.getYear() + ")";
 
         eventInfo.setText(eventInfoString);
-        //todo set gender image
+        if(associatedPerson.getGender().compareTo("m") == 0) {
+            genderImage.setImageResource(R.drawable.baseline_man_black_24);
+        }
+        else {
+            genderImage.setImageResource(R.drawable.baseline_woman_black_24);
+        }
 
         if(DataCache.getPolylines() != null) {
             for (Polyline p : DataCache.getPolylines()) {
