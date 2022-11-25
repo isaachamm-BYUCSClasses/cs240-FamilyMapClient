@@ -62,10 +62,21 @@ public class DataCache {
         }
         colorMap.put(eventType, color);
     }
+
+    public static List<Person> getPersonFamilyMembers(Person person) {
+        List<Person> familyMembers = new ArrayList<>();
+
+        familyMembers.add(getPersonById(person.getFatherID()));
+        familyMembers.add(getPersonById(person.getMotherID()));
+        familyMembers.add(getPersonById(person.getSpouseID()));
+
+        //todo how do you get children?
+
+        return familyMembers;
+    }
     public static String cacheData(String authToken, String personId) {
         DataCache.getInstance();
 
-//                AuthToken authToken = new AuthToken(loginResponse.getAuthtoken(), loginResponse.getUsername());
         PersonResponse personResponse = ServerProxy.getPeopleForUser(authToken);
         EventResponse eventResponse = ServerProxy.getEventsForUser(authToken);
 

@@ -22,5 +22,7 @@
     <string name="mapFragmentMenuSearch">Search</string>
     <string name="mapFragmentMenuSettings">Settings</string>
     <string name="eventNotSelected">Please select an event</string>
+    <string name="eventGroupTitle">Life Events</string>
+    <string name="personGroupTitle">Immediate Family Members</string>
 
 </resources>
