@@ -40,6 +40,7 @@ public class DataCache {
     // This maps from each person to their associated events, sorted chronologically
     private static Map<Person, List<Event>> personEvents;
     private static List<Polyline> polylines;
+    private static Map<Person, List<Person>> childrenMap;
 
     // String => personid of the ancestors. This is for showing only half
     Set<String> paternalAncestors;
@@ -70,7 +71,10 @@ public class DataCache {
         familyMembers.add(getPersonById(person.getMotherID()));
         familyMembers.add(getPersonById(person.getSpouseID()));
 
-        //todo how do you get children?
+        List<Person> children = getChildrenMap().get(person);
+        if(children != null) {
+            familyMembers.addAll(children);
+        }
 
         return familyMembers;
     }
@@ -84,12 +88,27 @@ public class DataCache {
         Map<String, Event> newEvents = new HashMap<>();
         Map<Person, List<Event>> newEventMap = new HashMap<>();
 
+        if(childrenMap == null) {
+            childrenMap = new HashMap<>();
+        }
+
         assert personResponse != null;
         for (Person person : personResponse.getAncestors()) {
             newPeople.put(person.getPersonID(), person);
         }
         DataCache.setPeople(newPeople);
 
+        // code to find and add children
+        // have to loop through again so that everyone is already added
+        for (Person person : personResponse.getAncestors()) {
+            newPeople.put(person.getPersonID(), person);
+            if (DataCache.getPersonById(person.getFatherID()) != null) {
+                addChildrenToMap(DataCache.getPersonById(person.getFatherID()), person);
+            }
+            if (DataCache.getPersonById(person.getMotherID()) != null) {
+                addChildrenToMap(DataCache.getPersonById(person.getMotherID()), person);
+            }
+        }
 
         assert eventResponse != null;
         for (Event event : eventResponse.getData()) {
@@ -123,6 +142,20 @@ public class DataCache {
         String fullName = firstName + " " + lastName;
 
         return fullName;
+    }
+
+    protected static void addChildrenToMap(Person parent, Person child) {
+        List<Person> newChildren;
+        if(childrenMap.get(parent) != null) {
+            newChildren = childrenMap.get(parent);
+        }
+        else {
+            newChildren = new ArrayList<>();
+        }
+        assert newChildren != null;
+        newChildren.add(child);
+
+        childrenMap.put(parent, newChildren);
     }
 
     public static String getServerPort() {
@@ -166,5 +199,11 @@ public class DataCache {
     }
     public static void setPolylines(List<Polyline> polylines) {
         DataCache.polylines = polylines;
+    }
+    public static Map<Person, List<Person>> getChildrenMap() {
+        return childrenMap;
+    }
+    public static void setChildrenMap(Map<Person, List<Person>> childrenMap) {
+        DataCache.childrenMap = childrenMap;
     }
 }

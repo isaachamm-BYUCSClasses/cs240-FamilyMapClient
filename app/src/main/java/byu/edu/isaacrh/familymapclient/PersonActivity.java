@@ -29,7 +29,12 @@ public class PersonActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Person currPerson = DataCache.getPersonById(intent.getStringExtra(CURR_PERSON_KEY));
-        Toast.makeText(this, currPerson.getFirstName(), Toast.LENGTH_SHORT).show();
+
+        updateView(currPerson);
+
+    }
+
+    public void updateView(Person currPerson) {
 
         TextView personName = findViewById(R.id.personActivityName);
         String personNameString = currPerson.getFirstName() + " " + currPerson.getLastName();
@@ -51,7 +56,6 @@ public class PersonActivity extends AppCompatActivity {
         List<Event> currPersonEvents = DataCache.getPersonEvents().get(currPerson);
 
         expandableListView.setAdapter(new ExpandableListAdapter(currPersonFamily, currPersonEvents));
-
     }
 
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -86,12 +90,26 @@ public class PersonActivity extends AppCompatActivity {
 
         @Override
         public Object getGroup(int groupPosition) {
-            return null;
+            switch(groupPosition) {
+                case EVENT_GROUP_POSITION:
+                    return R.string.eventGroupTitle;
+                case PERSON_GROUP_POSITION:
+                    return R.string.personGroupTitle;
+                default:
+                    throw new IllegalArgumentException("Unrecognized Group Position: " + groupPosition);
+            }
         }
 
         @Override
         public Object getChild(int groupPosition, int childPosition) {
-            return null;
+            switch(groupPosition) {
+                case EVENT_GROUP_POSITION:
+                    return currPersonEvents.get(childPosition);
+                case PERSON_GROUP_POSITION:
+                    return currPersonFamily.get(childPosition);
+                default:
+                    throw new IllegalArgumentException("Unrecognized Group Position: " + groupPosition);
+            }
         }
 
         @Override
@@ -171,7 +189,8 @@ public class PersonActivity extends AppCompatActivity {
             eventItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(PersonActivity.this, "YAY, you clicked an event", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PersonActivity.this, "NO, you clicked an event", Toast.LENGTH_SHORT).show();
+
                 }
             });
         }
@@ -179,6 +198,9 @@ public class PersonActivity extends AppCompatActivity {
         public void initializePersonView(View personItemView, final int childPosition) {
 
             Person associatedPerson = currPersonFamily.get(childPosition);
+            if(associatedPerson == null) {
+                return;
+            }
 
             ImageView eventGender = personItemView.findViewById(R.id.expandableListPersonGender);
             if(associatedPerson.getGender().compareTo("m") == 0) {
@@ -193,10 +215,27 @@ public class PersonActivity extends AppCompatActivity {
                     associatedPerson.getLastName();
             personName.setText(personNameString);
 
+            TextView personRelationship = personItemView.
+                    findViewById(R.id.expandableListPersonRelationship);
+            if(childPosition == 0) {
+                personRelationship.setText(R.string.father);
+            }
+            else if (childPosition == 1) {
+                personRelationship.setText(R.string.mother);
+            }
+            else if (childPosition == 2) {
+                personRelationship.setText(R.string.spouse);
+            }
+            else {
+                personRelationship.setText(R.string.child);
+            }
+
             personItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(PersonActivity.this, "NO, you clicked a person", Toast.LENGTH_SHORT).show();
+                    Person newPerson = currPersonFamily.get(childPosition);
+                    updateView(newPerson);
+
                 }
             });
         }

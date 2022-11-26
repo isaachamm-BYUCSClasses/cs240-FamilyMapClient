@@ -24,5 +24,9 @@
     <string name="eventNotSelected">Please select an event</string>
     <string name="eventGroupTitle">Life Events</string>
     <string name="personGroupTitle">Immediate Family Members</string>
+    <string name="father">Father</string>
+    <string name="mother">Mother</string>
+    <string name="spouse">Spouse</string>
+    <string name="child">Child</string>
 
 </resources>
