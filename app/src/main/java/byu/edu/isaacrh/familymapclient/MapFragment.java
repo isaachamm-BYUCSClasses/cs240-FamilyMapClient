@@ -101,10 +101,12 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
 
         switch(item.getItemId()) {
             case R.id.search_button:
+
                 Toast.makeText(getActivity(), R.string.mapFragmentMenuSearch, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.settings_button:
-                Toast.makeText(getActivity(), R.string.mapFragmentMenuSettings, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

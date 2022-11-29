@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">FamilyMapClient</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="serverHost">Server Host:</string>
     <string name="serverPort">Server Port:</string>
     <string name="userName">User Name:</string>
@@ -29,5 +28,40 @@
     <string name="spouse">Spouse</string>
     <string name="child">Child</string>
     <string name="fullName">Full Name:</string>
+
+
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="lifeStoryLines">Life Story Lines</string>
+    <string name="showLifeStoryLines">SHOW LIFE STORY LINES</string>
+    <string name="familyTreeLines">Family Tree Lines</string>
+    <string name="showFamilyTreeLines">SHOW FAMILY TREE LINES</string>
+    <string name="spouseLines">Spouse Lines</string>
+    <string name="showSpouseLines">SHOW SPOUSE LINES</string>
+    <string name="fatherSide">Father\'s Side</string>
+    <string name="filterFatherSide">FILTER BY FATHER\'S SIDE OF FAMILY</string>
+    <string name="motherSide">Mother\'s Side</string>
+    <string name="filterMotherSide">FILTER BY MOTHER\'S SIDE OF FAMILY</string>
+    <string name="maleEvents">Male Events</string>
+    <string name="filterMaleEvents">FILTER EVENTS FOR MALES</string>
+    <string name="femaleEvents">Female Events</string>
+    <string name="filterFemaleEvents">FILTER EVENTS FOR FEMALES</string>
+    <string name="logout">Logout</string>
+    <string name="returnToLoginScreen">RETURN TO LOGIN SCREEN</string>
+
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 
 </resources>
