@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,8 +54,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        // We're displaying menu options inside of a fragment, so we need this
-        setHasOptionsMenu(true);
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         eventInfo = view.findViewById(R.id.mapEventInfo);
@@ -65,6 +65,11 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        if(getArguments() == null) {
+            // We're displaying menu options inside of a fragment, so we need this
+            setHasOptionsMenu(true);
+        }
 
         LinearLayout linearLayout = view.findViewById(R.id.mapLinearLayout);
         linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -104,8 +109,6 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-
     }
 
     /**
@@ -144,19 +147,34 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
             Marker marker = mMap.addMarker(new MarkerOptions().
                     position(new LatLng(entry.getValue().getLatitude(), entry.getValue().getLongitude())).
                     icon(BitmapDescriptorFactory.defaultMarker(tempColorCode)));
-            //todo does this work on the other end when we retrieve from the map?
             marker.setTag(entry.getValue());
         }
 
         mMap.setOnMarkerClickListener(this);
+
+        if(getArguments() != null) {
+            String currEventId = getArguments().getString(EventActivity.CURR_EVENT_KEY);
+            Event currEvent = DataCache.getEventById(currEventId);
+            setMapOnEvent(currEvent);
+        }
 
     }
 
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
 
-        eventIsSelected = true;
         Event clickedEvent = (Event) marker.getTag();
+
+        assert clickedEvent != null;
+        setMapOnEvent(clickedEvent);
+
+        return false;
+    }
+
+    public void setMapOnEvent(Event clickedEvent) {
+
+        eventIsSelected = true;
+
         Person associatedPerson = DataCache.getPersonById(clickedEvent.getPersonID());
         currAssociatedPersonId = associatedPerson.getPersonID();
 
@@ -207,11 +225,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         Event birthEvent = DataCache.getPersonEvents().get(associatedPerson).get(0);
         lifeStoryLineRecurse(associatedPerson, birthEvent, 0, polylineList);
 
-
-
         DataCache.setPolylines(polylineList);
-
-        return false;
     }
 
     public void familyTreeLineRecurse(Person person, Event event, int width, List<Polyline> polylineList) {

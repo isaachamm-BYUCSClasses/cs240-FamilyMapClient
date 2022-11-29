@@ -28,5 +28,6 @@
     <string name="mother">Mother</string>
     <string name="spouse">Spouse</string>
     <string name="child">Child</string>
+    <string name="fullName">Full Name:</string>
 
 </resources>

@@ -10,18 +10,55 @@
         android:id="@+id/personActivityPersonDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_marginStart="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:text="@string/fullName"
+            />
+
         <TextView
             android:id="@+id/personActivityName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Sheila" />
+            android:textStyle="bold"
+            android:textSize="24sp"
+            tools:text="Sheila Parker" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginTop="2dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:text="@string/gender"
+            />
 
         <TextView
             android:id="@+id/personActivityGender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textStyle="bold"
+            android:textSize="24sp"
             tools:text="Female" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginTop="2dp"
+            />
 
     </LinearLayout>
 

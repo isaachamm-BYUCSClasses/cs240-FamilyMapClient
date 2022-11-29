@@ -1,10 +1,12 @@
 package byu.edu.isaacrh.familymapclient;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -46,7 +48,7 @@ public class PersonActivity extends AppCompatActivity {
             personGenderString = "Male";
         }
         else {
-            personGenderString = "female";
+            personGenderString = "Female";
         }
         personGender.setText(personGenderString);
 
@@ -56,6 +58,16 @@ public class PersonActivity extends AppCompatActivity {
         List<Event> currPersonEvents = DataCache.getPersonEvents().get(currPerson);
 
         expandableListView.setAdapter(new ExpandableListAdapter(currPersonFamily, currPersonEvents));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        return true;
     }
 
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -189,8 +201,9 @@ public class PersonActivity extends AppCompatActivity {
             eventItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(PersonActivity.this, "NO, you clicked an event", Toast.LENGTH_SHORT).show();
-
+                    Intent intent = new Intent(PersonActivity.this, EventActivity.class);
+                    intent.putExtra(EventActivity.CURR_EVENT_KEY, currEvent.getEventID());
+                    startActivity(intent);
                 }
             });
         }
@@ -235,7 +248,6 @@ public class PersonActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Person newPerson = currPersonFamily.get(childPosition);
                     updateView(newPerson);
-
                 }
             });
         }

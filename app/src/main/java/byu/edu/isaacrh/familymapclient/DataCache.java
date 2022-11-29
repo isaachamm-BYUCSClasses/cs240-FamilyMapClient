@@ -52,6 +52,9 @@ public class DataCache {
     public static Person getPersonById(String personId) {
         return getPeople().get(personId);
     }
+    public static Event getEventById(String eventId) {
+        return getEvents().get(eventId);
+    }
 
 
 

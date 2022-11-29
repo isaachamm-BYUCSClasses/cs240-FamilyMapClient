@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
-import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener {
 
@@ -17,11 +16,11 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
         setContentView(R.layout.activity_main);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragmentFrameLayout);
+        Fragment fragment = fragmentManager.findFragmentById(R.id.mainFragmentFrameLayout);
         if(fragment == null) {
             fragment = createLoginFragment();
             fragmentManager.beginTransaction()
-                    .replace(R.id.fragmentFrameLayout, fragment)
+                    .replace(R.id.mainFragmentFrameLayout, fragment)
                     .commit();
         }
         else {
@@ -37,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
         LoginFragment loginFragment = new LoginFragment();
         loginFragment.registerListener(this);
         return loginFragment;
-
     }
 
     @Override
@@ -46,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements LoginFragment.Lis
         Fragment fragment = new MapFragment();
 
         fragmentManager.beginTransaction()
-                .replace(R.id.fragmentFrameLayout, fragment)
+                .replace(R.id.mainFragmentFrameLayout, fragment)
                 .commit();
     }
 }
