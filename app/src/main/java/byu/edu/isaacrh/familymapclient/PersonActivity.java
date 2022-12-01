@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.Event;
@@ -55,7 +56,10 @@ public class PersonActivity extends AppCompatActivity {
 
         ExpandableListView expandableListView = findViewById(R.id.expandableListView);
         List<Person> currPersonFamily = DataCache.getPersonFamilyMembers(currPerson);
-        List<Event> currPersonEvents = DataCache.getPersonEvents().get(currPerson);
+        List<Event> currPersonEvents = DataCache.getCurrentEventsDisplay().get(currPerson);
+        if(currPersonEvents == null) {
+            currPersonEvents = new ArrayList<>();
+        }
 
         expandableListView.setAdapter(new ExpandableListAdapter(currPersonFamily, currPersonEvents));
     }

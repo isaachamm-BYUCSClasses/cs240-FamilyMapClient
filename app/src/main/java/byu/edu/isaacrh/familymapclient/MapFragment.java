@@ -33,6 +33,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import model.Event;
 import model.Person;
@@ -45,6 +46,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     private ImageView genderImage;
     private boolean eventIsSelected = false; // we use this to know if the person activity can be started
     private String currAssociatedPersonId;
+    private Event currEvent;
 
     public MapFragment() {
         // Required empty public constructor
@@ -167,10 +169,21 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
 
         Event clickedEvent = (Event) marker.getTag();
 
+        this.currEvent = clickedEvent;
+
         assert clickedEvent != null;
         setMapOnEvent(clickedEvent);
 
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(this.currEvent != null) {
+            setMapOnEvent(currEvent);
+        }
     }
 
     public void setMapOnEvent(Event clickedEvent) {
@@ -203,29 +216,39 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
 
         List<Polyline> polylineList = new ArrayList<>();
         // Code for the spouse line
-        if(DataCache.getPersonById(associatedPerson.getSpouseID()) != null) {
-            Person associatedSpouse = DataCache.getPersonById(associatedPerson.getSpouseID());
-            Event spouseBirthday = DataCache.getPersonEvents().get(associatedSpouse).get(0);
+        if(DataCache.isSpouseLines()) {
+            if (DataCache.getPersonById(associatedPerson.getSpouseID()) != null) {
+                Person associatedSpouse = DataCache.getPersonById(associatedPerson.getSpouseID());
+                if(Objects.requireNonNull(DataCache.getCurrentEventsDisplay().get(associatedSpouse) != null)) {
+                    Event spouseBirthday = DataCache.getCurrentEventsDisplay().get(associatedSpouse).get(0);
 
-            LatLng startPoint = new LatLng(clickedEvent.getLatitude(), clickedEvent.getLongitude());
-            LatLng endPoint = new LatLng(spouseBirthday.getLatitude(), spouseBirthday.getLongitude());
+                    LatLng startPoint = new LatLng(clickedEvent.getLatitude(), clickedEvent.getLongitude());
+                    LatLng endPoint = new LatLng(spouseBirthday.getLatitude(), spouseBirthday.getLongitude());
 
-            PolylineOptions options = new PolylineOptions()
-                    .add(startPoint)
-                    .add(endPoint)
-                    .color(Color.BLUE)
-                    .geodesic(true)
-                    .width(20);
-            Polyline polyline = mMap.addPolyline(options);
-            polylineList.add(polyline);
+                    PolylineOptions options = new PolylineOptions()
+                            .add(startPoint)
+                            .add(endPoint)
+                            .color(Color.BLUE)
+                            .geodesic(true)
+                            .width(20);
+                    Polyline polyline = mMap.addPolyline(options);
+                    polylineList.add(polyline);
+                }
+            }
         }
 
         // Code for the family tree line
-        familyTreeLineRecurse(associatedPerson, clickedEvent, 20, polylineList);
+        if(DataCache.isFamilyTreeLines()) {
+            familyTreeLineRecurse(associatedPerson, clickedEvent, 20, polylineList);
+        }
 
         // Code for the life story line
-        Event birthEvent = DataCache.getPersonEvents().get(associatedPerson).get(0);
-        lifeStoryLineRecurse(associatedPerson, birthEvent, 0, polylineList);
+        if(DataCache.isLifeStorylines()) {
+            if(DataCache.getCurrentEventsDisplay().get(associatedPerson) != null) {
+                Event birthEvent = DataCache.getCurrentEventsDisplay().get(associatedPerson).get(0);
+                lifeStoryLineRecurse(associatedPerson, birthEvent, 0, polylineList);
+            }
+        }
 
         DataCache.setPolylines(polylineList);
     }
@@ -234,41 +257,46 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
         if(DataCache.getPersonById(person.getFatherID()) != null) {
             Person father = DataCache.getPersonById(person.getFatherID());
             Person mother = DataCache.getPersonById(person.getMotherID());
+            Event fatherBirth = null;
+            Event motherBirth = null;
 
-            Event fatherBirth = DataCache.getPersonEvents().get(father).get(0);
-            Event motherBirth = DataCache.getPersonEvents().get(mother).get(0);
+            if (DataCache.getCurrentEventsDisplay().get(father) != null) {
+                fatherBirth = DataCache.getCurrentEventsDisplay().get(father).get(0);
+                familyTreeLineRecurse(father, fatherBirth, width - 5, polylineList);
+                LatLng startPoint = new LatLng(event.getLatitude(), event.getLongitude());
+                LatLng endPoint = new LatLng(fatherBirth.getLatitude(), fatherBirth.getLongitude());
+                PolylineOptions options = new PolylineOptions()
+                        .add(startPoint)
+                        .add(endPoint)
+                        .color(Color.BLACK)
+                        .geodesic(true)
+                        .width(width);
+                Polyline polyline = mMap.addPolyline(options);
+                polylineList.add(polyline);
+            }
+            if (DataCache.getCurrentEventsDisplay().get(mother) != null) {
+                motherBirth = DataCache.getCurrentEventsDisplay().get(mother).get(0);
+                familyTreeLineRecurse(mother, motherBirth, width - 5, polylineList);
+                LatLng startPoint = new LatLng(event.getLatitude(), event.getLongitude());
+                LatLng endPoint = new LatLng(motherBirth.getLatitude(), motherBirth.getLongitude());
+                PolylineOptions options = new PolylineOptions()
+                        .add(startPoint)
+                        .add(endPoint)
+                        .color(Color.BLACK)
+                        .geodesic(true)
+                        .width(width);
+                Polyline polyline = mMap.addPolyline(options);
+                polylineList.add(polyline);
+            }
 
-            familyTreeLineRecurse(father, fatherBirth, width - 5, polylineList);
-            familyTreeLineRecurse(mother, motherBirth, width - 5, polylineList);
-
-            LatLng startPoint = new LatLng(event.getLatitude(), event.getLongitude());
-            LatLng endPoint = new LatLng(fatherBirth.getLatitude(), fatherBirth.getLongitude());
-            PolylineOptions options = new PolylineOptions()
-                    .add(startPoint)
-                    .add(endPoint)
-                    .color(Color.BLACK)
-                    .geodesic(true)
-                    .width(width);
-            Polyline polyline = mMap.addPolyline(options);
-            polylineList.add(polyline);
-
-
-            endPoint = new LatLng(motherBirth.getLatitude(), motherBirth.getLongitude());
-            options = new PolylineOptions()
-                    .add(startPoint)
-                    .add(endPoint)
-                    .color(Color.BLACK)
-                    .geodesic(true)
-                    .width(width);
-            polyline = mMap.addPolyline(options);
-            polylineList.add(polyline);
         }
     }
     public void lifeStoryLineRecurse(Person person, Event prevEvent, int currIndex, List<Polyline> polylineList) {
-        if((currIndex + 1) < DataCache.getPersonEvents().get(person).size()) {
+        if((DataCache.getCurrentEventsDisplay().get(person) != null) &&
+            ((currIndex + 1) < DataCache.getCurrentEventsDisplay().get(person).size())) {
             currIndex += 1;
 
-            Event nextEvent = DataCache.getPersonEvents().get(person).get(currIndex);
+            Event nextEvent = DataCache.getCurrentEventsDisplay().get(person).get(currIndex);
 
             LatLng startPoint = new LatLng(prevEvent.getLatitude(), prevEvent.getLongitude());
             LatLng endPoint = new LatLng(nextEvent.getLatitude(), nextEvent.getLongitude());

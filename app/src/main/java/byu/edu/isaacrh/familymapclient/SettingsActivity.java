@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
@@ -24,6 +26,71 @@ public class SettingsActivity extends AppCompatActivity {
         Switch maleEvents = findViewById(R.id.maleEventSwitch);
         Switch femaleEvents = findViewById(R.id.femaleEventSwitch);
         LinearLayout logout = findViewById(R.id.logout);
+
+        lifeStoryLines.setChecked(DataCache.isLifeStorylines());
+        familyTreeLines.setChecked(DataCache.isFamilyTreeLines());
+        spouseLines.setChecked(DataCache.isSpouseLines());
+        fatherSide.setChecked(DataCache.isFatherSide());
+        motherSide.setChecked(DataCache.isMotherSide());
+        maleEvents.setChecked(DataCache.isMaleEventSwitch());
+        femaleEvents.setChecked(DataCache.isFemaleEventSwitch());
+
+        lifeStoryLines.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setLifeStorylines(!DataCache.isLifeStorylines());
+            }
+        });
+
+        familyTreeLines.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setFamilyTreeLines(!DataCache.isFamilyTreeLines());
+            }
+        });
+
+        spouseLines.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setSpouseLines(!DataCache.isSpouseLines());
+            }
+        });
+
+        fatherSide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setFatherSide(!DataCache.isFatherSide());
+                DataCache.calculateCurrentEvents();
+            }
+        });
+
+        motherSide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setMotherSide(!DataCache.isMotherSide());
+                DataCache.calculateCurrentEvents();
+            }
+        });
+
+        maleEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setMaleEventSwitch(!DataCache.isMaleEventSwitch());
+                DataCache.calculateCurrentEvents();
+            }
+        });
+
+        femaleEvents.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DataCache.setFemaleEventSwitch(!DataCache.isFemaleEventSwitch());
+                DataCache.calculateCurrentEvents();
+            }
+        });
+
+
+
+
 
 
 
