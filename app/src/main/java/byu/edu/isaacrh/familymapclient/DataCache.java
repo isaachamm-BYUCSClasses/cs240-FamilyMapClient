@@ -232,8 +232,21 @@ public class DataCache {
             newCurrentEvents.remove(person);
         }
 
-        newCurrentEvents.put(DataCache.getCurrUser(), DataCache.getPersonEvents().get(DataCache.getCurrUser()));
+        if(isMotherSide() || isFatherSide()) {
+            newCurrentEvents.put(DataCache.getCurrUser(), DataCache.getPersonEvents().get(DataCache.getCurrUser()));
+            Person currUserSpouse = DataCache.getPersonById(DataCache.getCurrUser().getSpouseID());
+            newCurrentEvents.put(currUserSpouse, DataCache.getPersonEvents().get(currUserSpouse));
+        }
 
+        Map<String, Event> eventIdMap = new HashMap<>();
+
+        for(Map.Entry<Person, List<Event>> entry: newCurrentEvents.entrySet()) {
+            for(Event event : entry.getValue()) {
+                eventIdMap.put(event.getEventID(), event);
+            }
+        }
+
+        DataCache.setEvents(eventIdMap);
         DataCache.setCurrentEventsDisplay(newCurrentEvents);
 
     }

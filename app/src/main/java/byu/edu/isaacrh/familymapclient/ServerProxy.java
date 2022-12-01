@@ -169,12 +169,6 @@ public class ServerProxy {
         return null;
     }
 
-    //fill
-    //load
-    //clear
-    //getPersonByID
-    //getEventById
-
     private static String readString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         InputStreamReader sr = new InputStreamReader(is);

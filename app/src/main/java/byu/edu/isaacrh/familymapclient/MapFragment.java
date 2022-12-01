@@ -128,6 +128,48 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        drawMarkers();
+
+//        float permColorCode = 0.0F;
+//        float tempColorCode = permColorCode;
+//
+//        for(Map.Entry<String, Event> entry : DataCache.getEvents().entrySet()) {
+//            if(DataCache.getColorMap() == null) {
+//                DataCache.addEventColor(entry.getValue().getEventType(), permColorCode);
+//            }
+//            else if (DataCache.getColorMap().get(entry.getValue().getEventType()) != null) {
+//                tempColorCode = DataCache.getColorMap().get(entry.getValue().getEventType());
+//            }
+//            else {
+//                permColorCode += 30;
+//                if(permColorCode > 360) {
+//                    permColorCode %= 30;
+//                    permColorCode += 3;
+//                }
+//                tempColorCode = permColorCode;
+//                DataCache.addEventColor(entry.getValue().getEventType(), permColorCode);
+//            }
+//
+//            Marker marker = mMap.addMarker(new MarkerOptions().
+//                    position(new LatLng(entry.getValue().getLatitude(), entry.getValue().getLongitude())).
+//                    icon(BitmapDescriptorFactory.defaultMarker(tempColorCode)));
+//            marker.setTag(entry.getValue());
+//        }
+//
+//        mMap.setOnMarkerClickListener(this);
+//
+//        if(getArguments() != null) {
+//            String currEventId = getArguments().getString(EventActivity.CURR_EVENT_KEY);
+//            Event currEvent = DataCache.getEventById(currEventId);
+//            setMapOnEvent(currEvent);
+//        }
+
+    }
+
+    public void drawMarkers() {
+
+        mMap.clear();
+
         float permColorCode = 0.0F;
         float tempColorCode = permColorCode;
 
@@ -161,7 +203,6 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
             Event currEvent = DataCache.getEventById(currEventId);
             setMapOnEvent(currEvent);
         }
-
     }
 
     @Override
@@ -180,6 +221,10 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     @Override
     public void onResume() {
         super.onResume();
+
+        if(mMap != null) {
+            drawMarkers();
+        }
 
         if(this.currEvent != null) {
             setMapOnEvent(currEvent);
