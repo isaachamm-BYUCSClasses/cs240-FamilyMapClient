@@ -35,7 +35,7 @@ public class DataCache {
     // This maps from each person to their associated events, sorted chronologically
     private static Map<Person, List<Event>> personEvents;
     private static Map<Person, List<Event>> currentEventsDisplay; // This holds current events according to settings filters
-    private static List<Polyline> polylines;
+    private static List<Polyline> polylines = new ArrayList<>();
     //maps from a person to a list of their children
     private static Map<Person, List<Person>> childrenMap;
 
