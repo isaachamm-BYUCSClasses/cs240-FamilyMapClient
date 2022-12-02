@@ -1,11 +1,16 @@
 package byu.edu.isaacrh.familymapclient;
 
+import android.provider.ContactsContract;
+
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import Response.EventResponse;
 import Response.PersonResponse;
@@ -44,6 +49,9 @@ public class DataCache {
     private static Map<Person, List<Event>> motherSideEvents = new HashMap<>();
     private static Map<Person, List<Event>> maleEvents;
     private static Map<Person, List<Event>> femaleEvents;
+
+    private static List<Event> eventSearch;
+    private static List<Person> personSearch;
 
     // settings
     private static boolean lifeStorylines = true;
@@ -186,6 +194,20 @@ public class DataCache {
         return fullName;
     }
 
+    protected static void addChildrenToMap(Person parent, Person child) {
+        List<Person> newChildren;
+        if(childrenMap.get(parent) != null) {
+            newChildren = childrenMap.get(parent);
+        }
+        else {
+            newChildren = new ArrayList<>();
+        }
+        assert newChildren != null;
+        newChildren.add(child);
+
+        childrenMap.put(parent, newChildren);
+    }
+
     // a recursive call to calculate the mother and father side events
     // Only need to do this for the currUser
     public static void calculateParentSideEvents(Person person, boolean fatherSide) {
@@ -212,17 +234,21 @@ public class DataCache {
             newCurrentEvents.putAll(DataCache.getMotherSideEvents());
         }
 
+        newCurrentEvents.put(DataCache.getCurrUser(), DataCache.getPersonEvents().get(DataCache.getCurrUser()));
+        Person currUserSpouse = DataCache.getPersonById(DataCache.getCurrUser().getSpouseID());
+        newCurrentEvents.put(currUserSpouse, DataCache.getPersonEvents().get(currUserSpouse));
+
         List<Person> peopleToRemoveGender = new ArrayList<>();
         if(!DataCache.isMaleEventSwitch()) {
             for(Map.Entry<Person, List<Event>> entry: newCurrentEvents.entrySet()) {
-                if(entry.getKey().getGender().compareTo("m") != 0) {
+                if(entry.getKey().getGender().compareTo("m") == 0) {
                     peopleToRemoveGender.add(entry.getKey());
                 }
             }
         }
         if (!DataCache.isFemaleEventSwitch()) {
             for(Map.Entry<Person, List<Event>> entry: newCurrentEvents.entrySet()) {
-                if(entry.getKey().getGender().compareTo("f") != 0) {
+                if(entry.getKey().getGender().compareTo("f") == 0) {
                     peopleToRemoveGender.add(entry.getKey());
                 }
             }
@@ -230,12 +256,6 @@ public class DataCache {
 
         for(Person person : peopleToRemoveGender) {
             newCurrentEvents.remove(person);
-        }
-
-        if(isMotherSide() || isFatherSide()) {
-            newCurrentEvents.put(DataCache.getCurrUser(), DataCache.getPersonEvents().get(DataCache.getCurrUser()));
-            Person currUserSpouse = DataCache.getPersonById(DataCache.getCurrUser().getSpouseID());
-            newCurrentEvents.put(currUserSpouse, DataCache.getPersonEvents().get(currUserSpouse));
         }
 
         Map<String, Event> eventIdMap = new HashMap<>();
@@ -251,19 +271,38 @@ public class DataCache {
 
     }
 
-    protected static void addChildrenToMap(Person parent, Person child) {
-        List<Person> newChildren;
-        if(childrenMap.get(parent) != null) {
-            newChildren = childrenMap.get(parent);
-        }
-        else {
-            newChildren = new ArrayList<>();
-        }
-        assert newChildren != null;
-        newChildren.add(child);
+    public static void searchFuntion(String query) {
 
-        childrenMap.put(parent, newChildren);
+        List<Person> searchPeople = new ArrayList<>();
+        Set<Event> searchEvents = new HashSet<>();
+
+        query = query.toLowerCase();
+        for(Map.Entry<String, Person> entry : DataCache.getPeople().entrySet()) {
+            if (entry.getValue().getFirstName().toLowerCase().contains(query) ||
+                entry.getValue().getLastName().toLowerCase().contains(query)) {
+                searchPeople.add(entry.getValue());
+            }
+        }
+        DataCache.setPersonSearch(searchPeople);
+
+        for(Map.Entry<Person, List<Event>> entry : DataCache.getCurrentEventsDisplay().entrySet()) {
+            if(entry.getValue() != null) {
+                for(Event event : entry.getValue()) {
+                    if (event.getCountry().toLowerCase().contains(query) ||
+                        event.getCity().toLowerCase().contains(query) ||
+                        event.getEventType().toLowerCase().contains(query) ||
+                        event.getYear().toString().toLowerCase().contains(query)) {
+                        searchEvents.add(event);
+                    }
+                }
+            }
+        }
+
+        List<Event> eventList = new ArrayList<>(searchEvents);
+
+        DataCache.setEventSearch(eventList);
     }
+
 
     public static Person getPersonById(String personId) {
         return getPeople().get(personId);
@@ -396,5 +435,17 @@ public class DataCache {
     }
     public static void setFemaleEventSwitch(boolean femaleEventSwitch) {
         DataCache.femaleEventSwitch = femaleEventSwitch;
+    }
+    public static List<Event> getEventSearch() {
+        return eventSearch;
+    }
+    public static void setEventSearch(List<Event> eventSearch) {
+        DataCache.eventSearch = eventSearch;
+    }
+    public static List<Person> getPersonSearch() {
+        return personSearch;
+    }
+    public static void setPersonSearch(List<Person> personSearch) {
+        DataCache.personSearch = personSearch;
     }
 }

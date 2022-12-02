@@ -24,6 +24,8 @@ import model.Person;
 public class PersonActivity extends AppCompatActivity {
 
     public static final String CURR_PERSON_KEY = "CurrPersonKey";
+    private static final int EVENT_GROUP_POSITION = 0;
+    private static final int PERSON_GROUP_POSITION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +77,6 @@ public class PersonActivity extends AppCompatActivity {
     }
 
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
-
-        private static final int EVENT_GROUP_POSITION = 0;
-        private static final int PERSON_GROUP_POSITION = 1;
 
         private List<Person> currPersonFamily;
         private List<Event> currPersonEvents;

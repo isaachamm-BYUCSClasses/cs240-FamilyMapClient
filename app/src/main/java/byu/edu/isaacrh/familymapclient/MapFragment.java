@@ -101,13 +101,15 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
+        Intent intent;
         switch(item.getItemId()) {
             case R.id.search_button:
-
-                Toast.makeText(getActivity(), R.string.mapFragmentMenuSearch, Toast.LENGTH_SHORT).show();
+                intent = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent);
                 return true;
+
             case R.id.settings_button:
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                intent = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(intent);
                 return true;
             default:
@@ -130,45 +132,12 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
 
         drawMarkers();
 
-//        float permColorCode = 0.0F;
-//        float tempColorCode = permColorCode;
-//
-//        for(Map.Entry<String, Event> entry : DataCache.getEvents().entrySet()) {
-//            if(DataCache.getColorMap() == null) {
-//                DataCache.addEventColor(entry.getValue().getEventType(), permColorCode);
-//            }
-//            else if (DataCache.getColorMap().get(entry.getValue().getEventType()) != null) {
-//                tempColorCode = DataCache.getColorMap().get(entry.getValue().getEventType());
-//            }
-//            else {
-//                permColorCode += 30;
-//                if(permColorCode > 360) {
-//                    permColorCode %= 30;
-//                    permColorCode += 3;
-//                }
-//                tempColorCode = permColorCode;
-//                DataCache.addEventColor(entry.getValue().getEventType(), permColorCode);
-//            }
-//
-//            Marker marker = mMap.addMarker(new MarkerOptions().
-//                    position(new LatLng(entry.getValue().getLatitude(), entry.getValue().getLongitude())).
-//                    icon(BitmapDescriptorFactory.defaultMarker(tempColorCode)));
-//            marker.setTag(entry.getValue());
-//        }
-//
-//        mMap.setOnMarkerClickListener(this);
-//
-//        if(getArguments() != null) {
-//            String currEventId = getArguments().getString(EventActivity.CURR_EVENT_KEY);
-//            Event currEvent = DataCache.getEventById(currEventId);
-//            setMapOnEvent(currEvent);
-//        }
-
     }
 
     public void drawMarkers() {
 
         mMap.clear();
+
 
         float permColorCode = 0.0F;
         float tempColorCode = permColorCode;
@@ -226,8 +195,25 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
             drawMarkers();
         }
 
+        boolean displayCurrEvent = false;
+
         if(this.currEvent != null) {
-            setMapOnEvent(currEvent);
+            for(Map.Entry<Person, List<Event>> entry : DataCache.getCurrentEventsDisplay().entrySet()) {
+                if(entry.getValue() != null) {
+                    for(Event event : entry.getValue()) {
+                        if(this.currEvent.getEventID().compareTo(event.getEventID()) == 0) {
+                            displayCurrEvent = true;
+                        }
+                    }
+                }
+            }
+
+            if(displayCurrEvent == true) {
+                setMapOnEvent(currEvent);
+            } else {
+                genderImage.setImageResource(R.drawable.baseline_android_black_24);
+                eventInfo.setText(R.string.mapFragmentClickMessage);
+            }
         }
     }
 
