@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -144,10 +145,10 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
 
         for(Map.Entry<String, Event> entry : DataCache.getEvents().entrySet()) {
             if(DataCache.getColorMap() == null) {
-                DataCache.addEventColor(entry.getValue().getEventType(), permColorCode);
+                DataCache.addEventColor(entry.getValue().getEventType().toLowerCase(), permColorCode);
             }
-            else if (DataCache.getColorMap().get(entry.getValue().getEventType()) != null) {
-                tempColorCode = DataCache.getColorMap().get(entry.getValue().getEventType());
+            else if (DataCache.getColorMap().get(entry.getValue().getEventType().toLowerCase()) != null) {
+                tempColorCode = DataCache.getColorMap().get(entry.getValue().getEventType().toLowerCase());
             }
             else {
                 permColorCode += 30;
