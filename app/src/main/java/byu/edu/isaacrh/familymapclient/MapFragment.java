@@ -157,7 +157,7 @@ public class MapFragment extends Fragment  implements OnMapReadyCallback,
                     permColorCode += 3;
                 }
                 tempColorCode = permColorCode;
-                DataCache.addEventColor(entry.getValue().getEventType(), permColorCode);
+                DataCache.addEventColor(entry.getValue().getEventType().toLowerCase(), permColorCode);
             }
 
             Marker marker = mMap.addMarker(new MarkerOptions().
