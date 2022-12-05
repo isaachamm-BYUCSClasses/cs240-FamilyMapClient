@@ -14,6 +14,7 @@ import java.net.URL;
 
 import Request.LoginRequest;
 import Request.RegisterRequest;
+import Response.ClearResponse;
 import Response.EventResponse;
 import Response.LoginResponse;
 import Response.PersonResponse;
@@ -51,12 +52,16 @@ public class ServerProxy {
                 RegisterResponse registerResponse = gson.fromJson(responseData, RegisterResponse.class);
                 return registerResponse;
             }
+            else {
+                RegisterResponse response = new RegisterResponse(false, "Error: register failed");
+                return response;
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            RegisterResponse response = new RegisterResponse(false, "Error: register failed");
+            return response;
         }
-
-        return null;
     }
 
     //login user
@@ -87,11 +92,16 @@ public class ServerProxy {
                 LoginResponse loginResponse = gson.fromJson(responseData, LoginResponse.class);
                 return loginResponse;
             }
+            else {
+                LoginResponse response = new LoginResponse("Error: login failed", false);
+                return response;
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            LoginResponse response = new LoginResponse("Error: login failed", false);
+            return response;
         }
-        return null;
     }
 
         //get people
@@ -116,13 +126,16 @@ public class ServerProxy {
                 PersonResponse loginResponse = gson.fromJson(responseData, PersonResponse.class);
                 return loginResponse;
             }
+            else {
+                PersonResponse response = new PersonResponse("Error: problem getting people", true);
+                return response;
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            PersonResponse response = new PersonResponse("Error: problem getting people", true);
+            return response;
         }
-
-
-        return null;
     }
 
     //get events
@@ -147,12 +160,50 @@ public class ServerProxy {
                 EventResponse eventResponse = gson.fromJson(responseData, EventResponse.class);
                 return eventResponse;
             }
+            else {
+                EventResponse response = new EventResponse("Error: problem getting events", true);
+                return response;
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
+            EventResponse response = new EventResponse("Error: problem getting events", true);
+            return response;
+        }
+    }
+
+    public static ClearResponse clear() {
+        try{
+            URL url = new URL("http://" + DataCache.getServerHost() + ":" +
+                    DataCache.getServerPort() + "/clear");
+
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+            http.connect();
+
+            if(http.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                System.out.println("Clear Successful");
+
+                InputStream responseBody = http.getInputStream();
+                String responseData = readString(responseBody);
+
+                Gson gson = new Gson();
+                ClearResponse clearResponse = gson.fromJson(responseData, ClearResponse.class);
+                return clearResponse;
+            }
+            else {
+                ClearResponse response = new ClearResponse("Clear Failed", false);
+                return response;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            ClearResponse response = new ClearResponse("Clear Failed", false);
+            return response;
         }
 
-        return null;
     }
 
     private static String readString(InputStream is) throws IOException {

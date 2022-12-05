@@ -66,17 +66,17 @@ public class DataCache {
         serverPort = "";
         serverHost ="";
         currUser = null;
-        people.clear();
-        events.clear();
-        colorMap.clear();
-        personEvents.clear();
-        currentEventsDisplay.clear();
-        polylines.clear();
-        childrenMap.clear();
-        fatherSideEvents.clear();
-        motherSideEvents.clear();
-        maleEvents.clear();
-        femaleEvents.clear();
+        people = new HashMap<>();
+        events = new HashMap<>();
+        colorMap = new HashMap<>();
+        personEvents = new HashMap<>();
+        currentEventsDisplay = new HashMap<>();
+        polylines = new ArrayList<>();
+        childrenMap = new HashMap<>();
+        fatherSideEvents = new HashMap<>();
+        motherSideEvents = new HashMap<>();
+        maleEvents = new HashMap<>();
+        femaleEvents = new HashMap<>();
 
         lifeStorylines = true;
         familyTreeLines = true;
