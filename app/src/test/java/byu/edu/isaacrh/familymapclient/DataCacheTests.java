@@ -12,6 +12,7 @@ import java.util.List;
 import Request.LoginRequest;
 import Request.RegisterRequest;
 import Response.LoginResponse;
+import model.Event;
 import model.Person;
 
 public class DataCacheTests {
@@ -199,9 +200,20 @@ public class DataCacheTests {
     @DisplayName("Normal sort events")
     public void sortEvents() {
 
-        LoginResponse loginResponse = ServerProxy.login(sheilaLogin);
-        DataCache.cacheData(loginResponse.getAuthtoken(), loginResponse.getPersonID());
+        Person sheila = DataCache.getPersonById("Sheila_Parker");
+        List<Event> sheilaEvents = DataCache.getPersonEvents().get(sheila);
 
+        assert sheilaEvents != null;
+        assertEquals("birth", sheilaEvents.get(0).getEventType());
+        assertEquals("marriage", sheilaEvents.get(1).getEventType());
+        assertEquals("completed asteroids", sheilaEvents.get(2).getEventType());
+        assertEquals("death", sheilaEvents.get(sheilaEvents.size() - 1).getEventType());
+
+        assertTrue(sheilaEvents.get(0).getYear() <= sheilaEvents.get(1).getYear());
+        assertTrue(sheilaEvents.get(1).getYear() <= sheilaEvents.get(2).getYear());
+        assertTrue(sheilaEvents.get(2).getYear() <= sheilaEvents.get(3).getYear());
+        assertTrue(sheilaEvents.get(3).getYear() <=
+                sheilaEvents.get(sheilaEvents.size() - 1).getYear());
 
     }
 
@@ -209,8 +221,12 @@ public class DataCacheTests {
     @DisplayName("Abnormal sort events, no birth and no death")
     public void sortEventsAbnormal() {
 
-        //cachedata
-        //Patrick wilson in Patrick Spencer's Data has no birth/death events
+        //frank has no birth and no death event
+        Person frank = DataCache.getPersonById("Frank_Jones");
+        List<Event> frankEvents = DataCache.getPersonEvents().get(frank);
+
+        assert frankEvents != null;
+        assertTrue(frankEvents.get(0).getYear() <= frankEvents.get(1).getYear());
 
     }
 
@@ -220,7 +236,30 @@ public class DataCacheTests {
     @DisplayName("Search and return results")
     public void searchReturnsResults() {
 
-        //searchfunction sets Datacache.getEventSearch
+        String search1 = "s";
+        DataCache.searchFuntion(search1);
+        assertTrue(DataCache.getPersonSearch().size() != 0);
+        assertTrue(DataCache.getEventSearch().size() != 0);
+
+        String search2 = "sh";
+        DataCache.searchFuntion(search2);
+        assertEquals(1, DataCache.getPersonSearch().size());
+        assertEquals(5, DataCache.getEventSearch().size());
+        assertEquals("Sheila", DataCache.getPersonSearch().get(0).getFirstName());
+
+        String search3 = "sheila";
+        DataCache.searchFuntion(search3);
+        assertEquals(1, DataCache.getPersonSearch().size());
+        assertEquals(5, DataCache.getEventSearch().size());
+        assertEquals("Sheila", DataCache.getPersonSearch().get(0).getFirstName());
+
+        String search4 = "rodham";
+        DataCache.searchFuntion(search4);
+        assertEquals(2, DataCache.getPersonSearch().size());
+        assertEquals(4, DataCache.getEventSearch().size());
+        assertEquals("Ken", DataCache.getPersonSearch().get(0).getFirstName());
+        assertEquals("Mrs", DataCache.getPersonSearch().get(1).getFirstName());
+
 
     }
 
@@ -229,6 +268,10 @@ public class DataCacheTests {
     public void searchReturnsNoResults() {
 
         //searchfunction sets Datacache.getEventSearch
+        String search = "asedfjklkjasdflkjasdgkljsadg";
+        DataCache.searchFuntion(search);
+        assertEquals(0, DataCache.getPersonSearch().size());
+        assertEquals(0, DataCache.getEventSearch().size());
 
     }
 

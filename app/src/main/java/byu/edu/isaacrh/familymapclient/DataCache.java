@@ -288,10 +288,15 @@ public class DataCache {
         for(Map.Entry<Person, List<Event>> entry : DataCache.getCurrentEventsDisplay().entrySet()) {
             if(entry.getValue() != null) {
                 for(Event event : entry.getValue()) {
+
+                    Person associatedPerson = DataCache.getPersonById(event.getPersonID());
+
                     if (event.getCountry().toLowerCase().contains(query) ||
                         event.getCity().toLowerCase().contains(query) ||
                         event.getEventType().toLowerCase().contains(query) ||
-                        event.getYear().toString().toLowerCase().contains(query)) {
+                        event.getYear().toString().toLowerCase().contains(query) ||
+                        associatedPerson.getFirstName().toLowerCase().contains(query) ||
+                        associatedPerson.getLastName().toLowerCase().contains(query)) {
                         searchEvents.add(event);
                     }
                 }
