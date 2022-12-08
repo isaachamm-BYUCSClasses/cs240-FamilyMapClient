@@ -1,5 +1,6 @@
 package byu.edu.isaacrh.familymapclient;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +21,9 @@ public class DataCacheTests {
         PRIOR TO RUNNING TESTS FOR THESE TESTS TO PASS
      */
 
-    LoginRequest sheilaLogin = new LoginRequest("sheila", "parker");
-    LoginRequest patrickLogin = new LoginRequest("patrick", "spencer");
+    private final static LoginRequest sheilaLogin = new LoginRequest("sheila", "parker");
+    private final static LoginRequest patrickLogin = new LoginRequest("patrick", "spencer");
+    private static LoginResponse loginResponse = null;
     private final static String serverHost = "localhost";
     private final static String serverPort = "8080";
 
@@ -30,16 +32,21 @@ public class DataCacheTests {
         DataCache.setServerHost(serverHost);
         DataCache.setServerPort(serverPort);
 
+        loginResponse = ServerProxy.login(sheilaLogin);
+        DataCache.cacheData(loginResponse.getAuthtoken(), loginResponse.getPersonID());
+
+
+    }
+
+    @After
+    public void eachCleanup() {
+        DataCache.clearCache();
     }
 
     //calculate family relationships
     @Test
     @DisplayName("Calculate family relationships")
     public void calculateRelationships() {
-
-        //getpersonfamilymembers function
-        LoginResponse loginResponse = ServerProxy.login(sheilaLogin);
-        DataCache.cacheData(loginResponse.getAuthtoken(), loginResponse.getPersonID());
 
         //Blaine McGary has 4 family members
         Person blaine = DataCache.getPersonById("Blaine_McGary");
@@ -64,10 +71,6 @@ public class DataCacheTests {
     @Test
     @DisplayName("Calculate family relationships, missing people")
     public void calculateRelationshipsAbnormal() {
-
-        //getpersonfamilymembersfunction
-        LoginResponse loginResponse = ServerProxy.login(sheilaLogin);
-        DataCache.cacheData(loginResponse.getAuthtoken(), loginResponse.getPersonID());
 
         //Sheila Parker has no child
         Person sheila = DataCache.getPersonById("Sheila_Parker");
@@ -102,7 +105,54 @@ public class DataCacheTests {
     @DisplayName("Filter and return results")
     public void filterEvents() {
 
-        //calculatecurrentevents
+        Person sheila = DataCache.getPersonById("Sheila_Parker");
+        Person ken = DataCache.getPersonById("Ken_Rodham");
+
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(sheila));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
+
+        DataCache.setFemaleEventSwitch(false);
+        DataCache.calculateCurrentEvents();
+        assertNull(DataCache.getCurrentEventsDisplay().get(sheila));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
+
+        DataCache.setFemaleEventSwitch(true);
+        DataCache.calculateCurrentEvents();
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(sheila));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
+
+        DataCache.setMaleEventSwitch(false);
+        DataCache.calculateCurrentEvents();
+        assertNull(DataCache.getCurrentEventsDisplay().get(ken));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(sheila));
+
+        DataCache.setMaleEventSwitch(true);
+        DataCache.calculateCurrentEvents();
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
+
+        // ken is on the father side
+        // mrs jones is on the mother side
+        Person mrsJones = DataCache.getPersonById("Mrs_Jones");
+
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
+
+        DataCache.setMotherSide(false);
+        DataCache.calculateCurrentEvents();
+        assertNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
+
+        DataCache.setMotherSide(true);
+        DataCache.calculateCurrentEvents();
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
+
+        DataCache.setFatherSide(false);
+        DataCache.calculateCurrentEvents();
+        assertNull(DataCache.getCurrentEventsDisplay().get(ken));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
+
+        DataCache.setFatherSide(true);
+        DataCache.calculateCurrentEvents();
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
 
     }
 
@@ -110,8 +160,36 @@ public class DataCacheTests {
     @DisplayName("Filter and return NO results")
     public void filterEventsAbnormal() {
 
-        //calculatecurrentevents
+        Person sheila = DataCache.getPersonById("Sheila_Parker");
+        Person ken = DataCache.getPersonById("Ken_Rodham");
+        Person mrsJones = DataCache.getPersonById("Mrs_Jones");
 
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(sheila));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(ken));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
+
+        // this should return completely with 0 events and 0 people
+        DataCache.setFemaleEventSwitch(false);
+        DataCache.setMaleEventSwitch(false);
+        DataCache.calculateCurrentEvents();
+        assertEquals(0, DataCache.getCurrentEventsDisplay().size());
+        assertNull(DataCache.getCurrentEventsDisplay().get(sheila));
+        assertNull(DataCache.getCurrentEventsDisplay().get(ken));
+        assertNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
+
+        // sheila and her spouse (David) should still return true here becuase she's the current user
+        DataCache.setFemaleEventSwitch(true);
+        DataCache.setMaleEventSwitch(true);
+        DataCache.setFatherSide(false);
+        DataCache.setMotherSide(false);
+        DataCache.calculateCurrentEvents();
+
+        Person davis = DataCache.getPersonById("Davis_Hyer");
+
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(davis));
+        assertNotNull(DataCache.getCurrentEventsDisplay().get(sheila));
+        assertNull(DataCache.getCurrentEventsDisplay().get(ken));
+        assertNull(DataCache.getCurrentEventsDisplay().get(mrsJones));
 
     }
 
@@ -121,7 +199,9 @@ public class DataCacheTests {
     @DisplayName("Normal sort events")
     public void sortEvents() {
 
-        //cachedata
+        LoginResponse loginResponse = ServerProxy.login(sheilaLogin);
+        DataCache.cacheData(loginResponse.getAuthtoken(), loginResponse.getPersonID());
+
 
     }
 
